@@ -1,0 +1,28 @@
+name: Aggiorna tabella
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  aggiorna:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Genera la tabella
+        run: python3 genera.py
+      - name: Salva se e cambiata
+        run: |
+          if git diff --quiet -- anime_ids.json; then
+            echo "Nessuna modifica"
+            exit 0
+          fi
+          git config user.name "aandroide"
+          git config user.email "14141574+aandroide@users.noreply.github.com"
+          git add anime_ids.json
+          git commit -m "Aggiornamento tabella"
+          git push
